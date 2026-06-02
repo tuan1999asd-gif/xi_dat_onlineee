@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Xì Dách Online - Bàn Thật</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(circle at top,#173e32,#071a14 62%,#020604);font-family:Arial,Helvetica,sans-serif;color:#fff}
+.wrap{max-width:1240px;margin:0 auto;padding:16px}
+.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}
+.logo{font-size:clamp(30px,5vw,56px);font-weight:1000;color:#ffd86b;text-shadow:0 0 20px rgba(255,216,107,.35)}
+.tag{padding:10px 13px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);font-weight:900}
+.panel{background:rgba(4,17,14,.84);border:1px solid rgba(255,255,255,.14);border-radius:22px;padding:16px;box-shadow:0 18px 50px rgba(0,0,0,.28);margin-bottom:14px}
+h2,h3{margin:0 0 12px;color:#ffd86b}
+input{width:100%;padding:15px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.09);color:#fff;font-size:17px;margin:8px 0;outline:none}
+button{border:0;border-radius:999px;padding:13px 18px;margin:5px;font-size:15px;font-weight:1000;cursor:pointer;background:linear-gradient(180deg,#ffe77a,#d89a25);color:#1c1205;box-shadow:0 10px 24px rgba(0,0,0,.24)}
+button.secondary{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16);color:#fff}
+button.good{background:linear-gradient(180deg,#83ffb8,#22aa63);color:#04140c}
+button.danger{background:linear-gradient(180deg,#ff7474,#c73131);color:#fff}
+button:disabled{opacity:.4;cursor:not-allowed}
+.hidden{display:none!important}
+.note{padding:11px 13px;border-radius:14px;background:rgba(255,216,107,.13);border:1px solid rgba(255,216,107,.25);color:#ffe8a6;margin:10px 0;line-height:1.45}
+.err{padding:12px 14px;border-radius:14px;background:rgba(255,70,70,.16);border:1px solid rgba(255,70,70,.36);color:#ffd2d2;margin:10px 0;line-height:1.45}
+.ok{padding:12px 14px;border-radius:14px;background:rgba(80,255,150,.13);border:1px solid rgba(80,255,150,.28);color:#caffdc;margin:10px 0}
+.grid{display:grid;grid-template-columns:310px 1fr;gap:16px}
+.small{font-size:13px;color:rgba(255,255,255,.72);line-height:1.45}
+.copy{user-select:all;color:#7dffb2;font-weight:1000}
+.player{display:flex;justify-content:space-between;gap:10px;padding:10px;border-radius:14px;background:rgba(255,255,255,.075);border:1px solid rgba(255,255,255,.1);margin-bottom:8px}
+.name{font-weight:1000}.gold{color:#ffd86b;font-weight:1000}
+.log{max-height:180px;overflow:auto;background:rgba(0,0,0,.22);border-radius:14px;padding:10px;font-size:13px;line-height:1.5}
+.tableWrap{position:relative;min-height:680px;background:radial-gradient(circle at center,#23734f 0,#0b4b34 48%,#062519 100%);border:1px solid rgba(255,255,255,.16);border-radius:38px;padding:16px;box-shadow:inset 0 0 100px rgba(0,0,0,.35),0 24px 80px rgba(0,0,0,.32);overflow:hidden}
+.tableFelt{position:absolute;inset:28px;border:2px solid rgba(255,216,107,.35);border-radius:34px;pointer-events:none}
+.tableTitle{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:42px;font-weight:1000;color:rgba(255,216,107,.12);letter-spacing:-1px;pointer-events:none;text-align:center}
+.seat{position:absolute;width:260px;min-height:150px;background:rgba(0,0,0,.23);border:1px solid rgba(255,255,255,.13);border-radius:20px;padding:12px;box-shadow:0 12px 28px rgba(0,0,0,.22)}
+.seat.dealer{left:50%;top:48%;transform:translate(-50%,-50%);background:rgba(48,18,8,.38);border-color:rgba(255,216,107,.32);z-index:2}
+.seat.p0{left:50%;bottom:20px;transform:translateX(-50%)}
+.seat.p1{left:34px;bottom:100px}
+.seat.p2{right:34px;bottom:100px}
+.seat.p3{left:34px;top:80px}
+.seat.p4{right:34px;top:80px}
+.seatHead{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:8px}
+.cards{display:flex;gap:7px;flex-wrap:wrap;min-height:82px}
+.card{width:56px;height:78px;background:#fff;color:#111;border-radius:9px;padding:6px;display:flex;flex-direction:column;justify-content:space-between;font-weight:1000;box-shadow:0 8px 18px rgba(0,0,0,.24)}
+.card.red{color:#d11f36}.rank{font-size:17px}.suit{font-size:23px;text-align:center}
+.card.back{background:linear-gradient(135deg,#1b4cff,#07154b);color:#fff;align-items:center;justify-content:center}
+.card.back:before{content:"★";font-size:28px;color:#ffd86b;text-shadow:0 0 12px rgba(255,216,107,.8)}
+.status{font-size:12px;color:rgba(255,255,255,.72)}
+.controls{position:absolute;left:50%;bottom:205px;transform:translateX(-50%);text-align:center;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:10px;min-width:320px}
+.resultBox{position:absolute;left:50%;top:20px;transform:translateX(-50%);width:min(720px,88%);background:rgba(0,0,0,.34);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:12px;max-height:190px;overflow:auto}
+.result{padding:8px;border-radius:12px;background:rgba(255,255,255,.08);margin:6px 0}
+@media(max-width:980px){
+.grid{grid-template-columns:1fr}.tableWrap{min-height:920px}.seat{position:relative!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;transform:none!important;width:100%;margin:10px 0}.controls,.resultBox{position:relative;left:auto;top:auto;bottom:auto;transform:none;width:100%;margin:10px 0}.tableTitle,.tableFelt{display:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="logo">XÌ DÁCH ONLINE</div>
+    <div class="tag">Bàn thật • Cái chia bài • Bài riêng tư</div>
+  </div>
+
+  <div id="message"></div>
+
+  <section id="login" class="panel">
+    <h2>1. Nhập tên người chơi</h2>
+    <div class="small">Mỗi người vào phòng có 200 vàng. Mỗi ván cược 10 vàng. Chủ phòng/cái có quyền cấp vàng.</div>
+    <input id="nameInput" placeholder="Ví dụ: Tuấn">
+    <button onclick="saveName()">Tiếp tục</button>
+  </section>
+
+  <section id="lobby" class="panel hidden">
+    <h2>2. Tạo hoặc vào phòng</h2>
+    <div class="note">Tên của bạn: <b id="nameView"></b></div>
+    <button class="good" onclick="createRoom()">Tạo phòng mới</button>
+    <button class="secondary" onclick="clearName()">Đổi tên</button>
+    <input id="roomInput" placeholder="Nhập mã phòng">
+    <button onclick="joinRoom()">Vào phòng</button>
+  </section>
+
+  <section id="game" class="grid hidden">
+    <aside class="panel">
+      <h2>Phòng: <span class="copy" id="roomView"></span></h2>
+      <div class="note">Cái ngồi giữa bàn và bấm <b>Chia bài</b>. Người chơi chỉ thấy bài của mình. Khi cái bấm <b>Xét bài</b> mới lật bài toàn bàn.</div>
+      <div class="small">Luật: 21 cao nhất, quá 21 là quắc. Cái ≤ 15 bắt buộc rút. Xì dách có thể nhận cái. Xì bàng x2.</div>
+
+      <h3 style="margin-top:16px">Người chơi</h3>
+      <div id="players"></div>
+
+      <div id="hostBox" class="hidden">
+        <h3>Quyền cái/chủ phòng</h3>
+        <input id="grantInput" type="number" value="50" placeholder="Số vàng cấp">
+        <button class="danger" onclick="deleteRoom()">Xóa phòng</button>
+      </div>
+
+      <h3>Nhật ký</h3>
+      <div class="log" id="log"></div>
+    </aside>
+
+    <main class="tableWrap">
+      <div class="tableFelt"></div>
+      <div class="tableTitle">XÌ DÁCH<br>21</div>
+      <div class="resultBox hidden" id="results"></div>
+      <div id="dealerSeat" class="seat dealer"></div>
+      <div id="playerSeats"></div>
+      <div class="controls" id="actions"></div>
+    </main>
+  </section>
+</div>
+
+<script>
+const DB = "https://xi-dach-online-7b2fa-default-rtdb.asia-southeast1.firebasedatabase.app";
+let playerId = localStorage.getItem("xd_table_id") || ("p_" + Math.random().toString(36).slice(2,10));
+localStorage.setItem("xd_table_id", playerId);
+let playerName = localStorage.getItem("xd_table_name") || "";
+let roomCode = "", roomData = null, pollTimer = null, busy = false;
+const $ = id => document.getElementById(id);
+
+function msg(text,type="ok"){$("message").innerHTML=text?`<div class="${type}">${text}</div>`:"";}
+async function api(path,method="GET",data=null){
+  const controller=new AbortController(); const timer=setTimeout(()=>controller.abort(),10000);
+  const opt={method,headers:{"Content-Type":"application/json"},signal:controller.signal};
+  if(data!==null) opt.body=JSON.stringify(data);
+  try{
+    const res=await fetch(`${DB}/${path}.json`,opt);
+    const txt=await res.text(); const json=txt?JSON.parse(txt):null;
+    if(!res.ok || (json&&json.error)) throw new Error((json&&json.error)||("HTTP "+res.status));
+    return json;
+  }catch(e){ if(e.name==="AbortError") throw new Error("Kết nối Firebase quá lâu. Kiểm tra mạng hoặc Rules."); throw e; }
+  finally{ clearTimeout(timer); }
+}
+
+function saveName(){
+  const name=$("nameInput").value.trim().slice(0,20);
+  if(!name){msg("Bạn cần nhập tên trước.","err");return;}
+  playerName=name; localStorage.setItem("xd_table_name",name);
+  $("login").classList.add("hidden"); $("lobby").classList.remove("hidden"); $("nameView").textContent=name; msg("");
+}
+function clearName(){localStorage.removeItem("xd_table_name");location.reload();}
+if(playerName){$("nameInput").value=playerName;saveName();}
+
+async function createRoom(){
+  if(busy)return; busy=true;
+  try{
+    msg("Đang tạo phòng...");
+    const code=Math.random().toString(36).slice(2,7).toUpperCase(), now=Date.now();
+    const room={code,hostId:playerId,dealerId:playerId,phase:"lobby",round:0,revealed:false,createdAt:now,
+      players:{[playerId]:{id:playerId,name:playerName,gold:200,hand:[],status:"waiting",joinedAt:now,seat:0}},
+      log:[playerName+" đã tạo phòng và làm cái."]};
+    await api("rooms/"+code,"PUT",room); enterRoom(code); msg("Tạo phòng thành công: "+code);
+  }catch(e){msg("Không tạo được phòng: "+escapeHtml(e.message||e)+"<br>Nếu PERMISSION_DENIED: vào Firebase Rules bấm Publish lại.","err");}
+  finally{busy=false;}
+}
+async function joinRoom(){
+  if(busy)return; busy=true;
+  try{
+    const code=$("roomInput").value.trim().toUpperCase(); if(!code){msg("Nhập mã phòng trước.","err");return;}
+    msg("Đang vào phòng...");
+    const room=await api("rooms/"+code,"GET"); if(!room){msg("Không tìm thấy phòng "+code,"err");return;}
+    const existed=room.players&&room.players[playerId];
+    const usedSeats=Object.values(room.players||{}).map(p=>p.seat||0);
+    const seat=existed&&existed.seat!=null?existed.seat:nextSeat(usedSeats);
+    await api("rooms/"+code+"/players/"+playerId,"PATCH",{id:playerId,name:playerName,gold:existed&&existed.gold!=null?existed.gold:200,hand:existed&&existed.hand?existed.hand:[],status:existed&&existed.status?existed.status:"waiting",joinedAt:existed&&existed.joinedAt?existed.joinedAt:Date.now(),seat});
+    await pushLog(code,playerName+" đã vào bàn."); enterRoom(code);
+  }catch(e){msg("Không vào được phòng: "+escapeHtml(e.message||e),"err");}
+  finally{busy=false;}
+}
+function nextSeat(used){for(let i=0;i<5;i++)if(!used.includes(i))return i;return used.length;}
+function enterRoom(code){
+  roomCode=code; $("lobby").classList.add("hidden"); $("game").classList.remove("hidden"); $("roomView").textContent=code; msg("");
+  if(pollTimer)clearInterval(pollTimer); poll(); pollTimer=setInterval(poll,900);
+}
+async function poll(){
+  try{const room=await api("rooms/"+roomCode,"GET"); if(!room){alert("Phòng đã bị xóa.");location.reload();return;} roomData=room; render();}
+  catch(e){msg("Lỗi cập nhật phòng: "+escapeHtml(e.message||e),"err");}
+}
+
+function render(){
+  const isDealer=roomData.dealerId===playerId, isHost=roomData.hostId===playerId;
+  $("hostBox").classList.toggle("hidden",!(isDealer||isHost));
+  renderPlayers(isDealer||isHost); renderLog(); renderTable(); renderActions(isDealer,isHost); renderResults();
+}
+function playersArr(){return Object.values(roomData.players||{}).sort((a,b)=>(a.joinedAt||0)-(b.joinedAt||0));}
+function children(){return playersArr().filter(p=>p.id!==roomData.dealerId);}
+function renderPlayers(canGrant){
+  $("players").innerHTML=playersArr().map(p=>{
+    const isD=p.id===roomData.dealerId;
+    return `<div class="player"><div><div class="name">${escapeHtml(p.name)} ${isD?"👑 Cái":""} ${p.id===playerId?"• Bạn":""}</div><div class="small">${statusText(p.status)} • ${p.gold||0} vàng</div></div><div style="text-align:right">${canGrant?`<button class="secondary" onclick="grantGold('${p.id}')">Cấp</button>`:""}</div></div>`;
+  }).join("");
+}
+function renderLog(){const logs=roomData.log||[];$("log").innerHTML=logs.slice(-50).map(x=>`<div>${escapeHtml(x)}</div>`).join("");$("log").scrollTop=$("log").scrollHeight;}
+function renderTable(){
+  const dealer=roomData.players&&roomData.players[roomData.dealerId];
+  $("dealerSeat").innerHTML=dealer?seatHtml(dealer,true,"dealer"):"";
+  $("playerSeats").innerHTML=children().slice(0,5).map((p,i)=>`<div class="seat p${i}">${seatHtml(p,false,"p"+i)}</div>`).join("");
+}
+function canSeeHand(p,isDealerSeat){
+  if(roomData.revealed) return true;
+  if(p.id===playerId) return true;
+  if(p.id===roomData.dealerId && playerId===roomData.dealerId) return true;
+  return false;
+}
+function seatHtml(p,isDealerSeat,cls){
+  const hand=p.hand||[], show=canSeeHand(p,isDealerSeat);
+  const score=show?handValue(hand):"?";
+  const sp=show?specialText(hand):"";
+  return `<div class="seatHead"><div><b>${isDealerSeat?"Cái":"Con"}: ${escapeHtml(p.name)}</b></div><div class="gold">${p.gold||0}v</div></div>
+  <div class="status">${statusText(p.status)} • Điểm: <b>${score}</b> ${sp?`• <b style="color:#ffd86b">${sp}</b>`:""}</div>
+  <div class="cards">${hand.length?hand.map(c=>show?cardHtml(c):cardBack()).join(""):"<span class='small'>Chưa có bài</span>"}</div>`;
+}
+function renderActions(isDealer,isHost){
+  const me=roomData.players&&roomData.players[playerId]; if(!me){$("actions").innerHTML="";return;}
+  if(roomData.phase==="lobby"){
+    $("actions").innerHTML=isDealer?`<button class="good" onclick="dealCards()">Chia bài - cược 10 vàng</button>`:`<div class="note">Đợi cái bấm Chia bài.</div>`;return;
+  }
+  if(roomData.phase==="players"){
+    if(roomData.currentTurn===playerId&&me.status==="playing"){
+      $("actions").innerHTML=`<button class="good" onclick="hitMe()">Rút</button><button class="secondary" onclick="standMe()">Dằn</button>`;
+    }else{const cur=roomData.players&&roomData.players[roomData.currentTurn];$("actions").innerHTML=`<div class="note">Đang tới lượt con: <b>${escapeHtml(cur?cur.name:"người chơi")}</b></div>`;}
+    return;
+  }
+  if(roomData.phase==="dealer"){
+    if(isDealer){
+      const score=handValue(me.hand||[]), must=score<=15;
+      $("actions").innerHTML=`<div class="note">Lượt cái. Điểm của cái: <b>${score}</b>. ${must?"≤15 bắt buộc rút.":"Có thể dằn và xét bài."}</div>
+      <button class="good" onclick="dealerHit()">Cái rút</button><button class="secondary" ${must?"disabled":""} onclick="dealerStand()">Cái dằn</button>`;
+    }else $("actions").innerHTML=`<div class="note">Các con đã xong. Đang chờ cái rút cuối.</div>`;
+    return;
+  }
+  if(roomData.phase==="ready_settle"){
+    $("actions").innerHTML=isDealer?`<button class="good" onclick="settleRound()">Xét bài / Lật bài</button>`:`<div class="note">Đang chờ cái xét bài để lật toàn bộ.</div>`;return;
+  }
+  if(roomData.phase==="settled"){
+    const take=isXiDach(me.hand||[])&&playerId!==roomData.dealerId;
+    $("actions").innerHTML=`${isDealer||isHost?`<button class="good" onclick="newLobby()">Ván mới</button>`:`<div class="note">Chờ cái mở ván mới.</div>`}${take?`<button class="secondary" onclick="takeDealer()">Nhận cái vì Xì dách</button>`:""}`;
+  }
+}
+function renderResults(){
+  const box=$("results");
+  if(roomData.phase!=="settled"||!roomData.results){box.classList.add("hidden");box.innerHTML="";return;}
+  box.classList.remove("hidden");
+  box.innerHTML=`<h3>Kết quả</h3>`+Object.values(roomData.results).map(r=>`<div class="result"><b>${escapeHtml(r.name)}</b>: ${escapeHtml(r.text)} <span class="gold">${r.goldChange>0?"+":""}${r.goldChange} vàng</span></div>`).join("");
+}
+
+async function dealCards(){
+  try{
+    if(roomData.dealerId!==playerId){msg("Chỉ cái được chia bài.","err");return;}
+    const active=playersArr().filter(p=>(p.gold||0)>=10);
+    if(active.length<2){msg("Cần ít nhất 2 người đủ 10 vàng.","err");return;}
+    const dealerId=roomData.dealerId, deck=shuffle(makeDeck()), updates={};
+    playersArr().forEach(p=>{updates[`players/${p.id}/hand`]=[];updates[`players/${p.id}/status`]="waiting";updates[`players/${p.id}/bet`]=0;});
+    active.forEach(p=>{const hand=[deck.pop(),deck.pop()];updates[`players/${p.id}/hand`]=hand;updates[`players/${p.id}/gold`]=(p.gold||0)-10;updates[`players/${p.id}/bet`]=10;updates[`players/${p.id}/status`]=p.id===dealerId?"dealer_wait":(isAutoDone(hand)?"done":"playing");});
+    const order=active.filter(p=>p.id!==dealerId).map(p=>p.id);
+    const current=order.find(id=>updates[`players/${id}/status`]==="playing")||null;
+    updates.deck=deck;updates.turnOrder=order;updates.currentTurn=current;updates.phase=current?"players":"dealer";updates.revealed=false;updates.results=null;updates.round=(roomData.round||0)+1;updates.log=[...(roomData.log||[]),"Cái đã chia bài. Mỗi người cược 10 vàng."].slice(-80);
+    await patchRoom(updates);
+  }catch(e){msg("Không chia được bài: "+escapeHtml(e.message||e),"err");}
+}
+async function hitMe(){
+  try{
+    const me=roomData.players[playerId]; if(roomData.currentTurn!==playerId||me.status!=="playing")return;
+    const deck=[...(roomData.deck||[])], hand=[...(me.hand||[]),deck.pop()], status=handValue(hand)>21?"bust":"playing";
+    await patchRoom({deck,[`players/${playerId}/hand`]:hand,[`players/${playerId}/status`]:status});
+    if(status==="bust") await nextTurn();
+  }catch(e){msg("Lỗi rút bài: "+escapeHtml(e.message||e),"err");}
+}
+async function standMe(){try{if(roomData.currentTurn!==playerId)return;await api(`rooms/${roomCode}/players/${playerId}`,"PATCH",{status:"stand"});await poll();await nextTurn();}catch(e){msg("Lỗi dằn: "+escapeHtml(e.message||e),"err");}}
+async function nextTurn(){
+  const room=await api("rooms/"+roomCode,"GET"), order=room.turnOrder||[], players=room.players||{};
+  const next=order.find(id=>players[id]&&players[id].status==="playing");
+  await api("rooms/"+roomCode,"PATCH",next?{currentTurn:next}:{currentTurn:null,phase:"dealer"}); await poll();
+}
+async function dealerHit(){
+  try{
+    if(playerId!==roomData.dealerId)return;
+    const dealer=roomData.players[roomData.dealerId], deck=[...(roomData.deck||[])], hand=[...(dealer.hand||[]),deck.pop()], status=handValue(hand)>21?"bust":"dealer_wait";
+    await patchRoom({deck,[`players/${roomData.dealerId}/hand`]:hand,[`players/${roomData.dealerId}/status`]:status});
+    if(status==="bust") await patchRoom({phase:"ready_settle"});
+  }catch(e){msg("Lỗi cái rút: "+escapeHtml(e.message||e),"err");}
+}
+async function dealerStand(){if(playerId!==roomData.dealerId)return;await patchRoom({phase:"ready_settle"});}
+async function settleRound(){
+  try{
+    if(playerId!==roomData.dealerId)return;
+    const room=await api("rooms/"+roomCode,"GET"), players=room.players||{}, dealer=players[room.dealerId], dealerHand=dealer.hand||[], dealerScore=handValue(dealerHand), dealerBust=dealerScore>21;
+    let dealerDelta=10; const updates={}, results={};
+    Object.values(players).forEach(p=>{
+      if(!p.bet||p.id===room.dealerId)return;
+      const hand=p.hand||[], pScore=handValue(hand); let payout=0,text="";
+      if(isXiBang(hand)){payout=30;text="Xì bàng thắng x2";dealerDelta-=20;}
+      else if(pScore>21){payout=0;text="Quắc, thua";dealerDelta+=10;}
+      else if(dealerBust){payout=20;text="Cái quắc, bạn thắng";dealerDelta-=10;}
+      else if(isXiBang(dealerHand)){payout=0;text="Cái xì bàng, bạn thua";dealerDelta+=10;}
+      else if(isXiDach(hand)&&!isXiDach(dealerHand)){payout=20;text="Xì dách thắng, có thể nhận cái";dealerDelta-=10;}
+      else if(pScore>dealerScore){payout=20;text=`${pScore} điểm thắng cái ${dealerScore} điểm`;dealerDelta-=10;}
+      else if(pScore===dealerScore){payout=10;text=`Hòa ${pScore} điểm, hoàn cược`;}
+      else{payout=0;text=`${pScore} điểm thua cái ${dealerScore} điểm`;dealerDelta+=10;}
+      updates[`players/${p.id}/gold`]=(p.gold||0)+payout;updates[`players/${p.id}/status`]="done";results[p.id]={name:p.name,text,goldChange:payout-10};
+    });
+    updates[`players/${room.dealerId}/gold`]=(dealer.gold||0)+dealerDelta;updates[`players/${room.dealerId}/status`]="done";updates.phase="settled";updates.revealed=true;updates.currentTurn=null;updates.results=results;updates.log=[...(room.log||[]),"Cái đã xét bài và lật toàn bàn."].slice(-80);
+    await patchRoom(updates);
+  }catch(e){msg("Lỗi xét bài: "+escapeHtml(e.message||e),"err");}
+}
+async function newLobby(){await patchRoom({phase:"lobby",revealed:false,currentTurn:null,results:null});}
+async function takeDealer(){const me=roomData.players[playerId];if(!isXiDach(me.hand||[]))return;await patchRoom({dealerId:playerId,hostId:playerId});await pushLog(roomCode,me.name+" nhận cái nhờ Xì dách.");}
+async function grantGold(pid){try{const amount=Math.max(1,Math.min(999,Number($("grantInput").value||0))),p=roomData.players[pid];await api(`rooms/${roomCode}/players/${pid}`,"PATCH",{gold:(p.gold||0)+amount});await pushLog(roomCode,"Cái cấp "+amount+" vàng cho "+p.name+".");await poll();}catch(e){msg("Không cấp vàng được: "+escapeHtml(e.message||e),"err");}}
+async function deleteRoom(){if(confirm("Xóa phòng này?"))await api("rooms/"+roomCode,"DELETE");}
+async function patchRoom(data){await api("rooms/"+roomCode,"PATCH",data);await poll();}
+async function pushLog(code,text){const logs=await api("rooms/"+code+"/log","GET")||[];logs.push(text);await api("rooms/"+code+"/log","PUT",logs.slice(-80));}
+
+function makeDeck(){const suits=["♠","♥","♦","♣"],ranks=["A","2","3","4","5","6","7","8","9","10","J","Q","K"],deck=[];suits.forEach(s=>ranks.forEach(r=>deck.push({rank:r,suit:s})));return deck;}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function cardValue(c){if(!c)return 0;if(c.rank==="A")return 11;if(["J","Q","K"].includes(c.rank))return 10;return Number(c.rank);}
+function handValue(hand){let total=0,aces=0;(hand||[]).forEach(c=>{total+=cardValue(c);if(c.rank==="A")aces++;});while(total>21&&aces>0){total-=10;aces--;}return total;}
+function isXiBang(hand){return hand&&hand.length===2&&hand[0].rank==="A"&&hand[1].rank==="A";}
+function isXiDach(hand){return hand&&hand.length===2&&!isXiBang(hand)&&handValue(hand)===21;}
+function isAutoDone(hand){return isXiBang(hand)||isXiDach(hand);}
+function specialText(hand){if(isXiBang(hand))return"Xì bàng x2";if(isXiDach(hand))return"Xì dách";if(handValue(hand)>21)return"Quắc";return"";}
+function cardHtml(c){const red=c.suit==="♥"||c.suit==="♦";return`<div class="card ${red?"red":""}"><div class="rank">${c.rank}</div><div class="suit">${c.suit}</div><div class="rank" style="transform:rotate(180deg)">${c.rank}</div></div>`;}
+function cardBack(){return`<div class="card back"></div>`;}
+function statusText(s){return{waiting:"Đang chờ",playing:"Đang rút",stand:"Đã dằn",bust:"Quắc",dealer_wait:"Chờ cái",done:"Xong"}[s]||s||"";}
+function escapeHtml(s){return String(s==null?"":s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
+</script>
+</body>
+</html>
